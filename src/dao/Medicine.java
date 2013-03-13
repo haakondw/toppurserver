@@ -14,8 +14,8 @@ public class Medicine implements Serializable {
 	public Medicine(){}
 
 	public Medicine(int medicineID, String name){
-		this.medicineID;
-		this.name;
+		this.medicineID = medicineID;
+		this.name = name;
 	}
 
 	public int getMedicineID(){
@@ -32,5 +32,10 @@ public class Medicine implements Serializable {
 
 	public void setName(String name){
 		this.name = name;
+	}
+
+	@Override
+	public String toString(){
+		return "Medicine [medicineID=" + medicineID + ", name=" + name + "]";
 	}
 }

@@ -45,5 +45,11 @@ public class Task implements Serializable{
 		this.dosage = dosage;
 	}
 
+	@Override
+	public String toString(){
+		return "Task [taskID=" + taskID + ", timestamp=" + timestamp
+				+ ", dosage=" + dosage + "]";
+	}
+
 
 }

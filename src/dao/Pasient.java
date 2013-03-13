@@ -78,7 +78,8 @@ public class Pasient implements Serializable{
 	@Override
 	public String toString() {
 		return "Pasient [pasientID=" + pasientID + ", socialSecurityNumber="
-				+ socialSecurityNumber + ", firstname=" + firstname
+				+ socialSecurityNumber
+				+ ", firstname=" + firstname
 				+ ", lastname=" + lastname + "]";
 	}
 }

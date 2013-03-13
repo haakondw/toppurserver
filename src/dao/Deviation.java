@@ -44,4 +44,11 @@ public class Deviation implements Serializable {
 	public void setTimestamp(Date timestamp){
 		this.timestamp = timestamp;
 	}
+
+	@Override
+	public String toString(){
+		return "Deviation [deviationID=" + deviationID 
+				+ ", description=" + description 
+				+ ", timestamp=" + timestamp + "]";
+	}
 }

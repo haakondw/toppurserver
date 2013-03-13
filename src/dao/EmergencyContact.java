@@ -53,4 +53,12 @@ public class EmergencyContact implements Serializable {
 	public void setPhonenumber(String phonenumber){
 		this.phonenumber = phonenumber;
 	}
+
+	@Override
+	public String toString(){
+		return "EmergencyContact [emergencyContactID=" + emergencyContactID
+				+ ", firstname=" + firstname
+				+ ", lastname=" + lastname
+				+ ", phonenumber=" + phonenumber + "]";
+	}
 }
