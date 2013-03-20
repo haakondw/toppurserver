@@ -183,8 +183,36 @@ public class Database {
 	
 	 
 	/**
-	 * This method returns all the clinics currently registered in the database.
+	 * This method returns all the departments currently registered in the database.
 	 */
+	
+	public ArrayList<Department> getDepartments() {
+	    PreparedStatement prpstm = null;
+	    ResultSet res = null;
+	    ArrayList<Department> departmetns = new ArrayList<Department>();
+	    connect();
+	    try {
+		prpstm = connection.prepareStatement("SELECT * FROM department");
+		res = prpstm.executeQuery();
+		while (res.next()){
+		    Department d = new Department(res.getInt("departmentID"), res.getString("name"));
+		    departments.add(d);		    
+		}
+	    }catch (SQLException sqle) {
+		Cleaner.writeMessage(sqle, "@getClinics()");
+	    }finally {
+		Cleaner.closePreparedStatement(prpstm);
+		Cleaner.closeResultSet(res);
+		disconnect();
+		return clinics;
+	    }
+	}
+
+    	
+
+    	/**
+	 * This method returns all the clinics currently registered in the database.
+
 	
 	public ArrayList<Clinic> getClinics() {
 	    PreparedStatement prpstm = null;
@@ -207,58 +235,4 @@ public class Database {
 		return clinics;
 	    }
 	}
-	
-	/**
-	 * This method returns all the departements registered in the database.
-	 */
-	public ArrayList<Department> getAllDepartments() {
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    ArrayList<Department> departments = new ArrayList<Department>();
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM department d, clinic c WHERE d.cid = c.cid");
-		res = prpstm.executeQuery();
-		while (res.next()){
-		    Clinic c = new Clinic(res.getInt("cid"),res.getString("clinic_name"));
-		    Department d = new Department(res.getString("department_name"), res.getInt("did"), c);
-		    departments.add(d);		    
-		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getAllDepartments()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
-		return departments;
-	    }
-	}
-	
-	/**
-	 * This method returns all the bedposts registered in the database.
-	 */
-	public ArrayList<Bedpost> getAllBedposts() {
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    ArrayList<Bedpost> bedposts = new ArrayList<Bedpost>();
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM bedpost b, department d, clinic c WHERE b.did = d.did AND d.cid = c.cid");
-		res = prpstm.executeQuery();
-		while (res.next()){
-		    Clinic c = new Clinic(res.getInt("cid"),res.getString("clinic_name"));
-		    Department d = new Department(res.getString("department_name"), res.getInt("did"), c);
-		    Bedpost b = new Bedpost(res.getString("bedpost_name"), res.getInt("bpid"), d);
-		    bedposts.add(b);		    
-		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getAllBedposts()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
-		return bedposts;
-	    }
-	}
-
 }
