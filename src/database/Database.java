@@ -208,6 +208,32 @@ public class Database {
 	    }
 	}
 
+    	/**
+	 * This method returns the patient list for a given department.
+	 */
+	public ArrayList<Patient> getPatientList(int department_id) {
+	    ArrayList<Patient> patients = new ArrayList<Patient>();
+	    PreparedStatement prpstm = null;
+	    ResultSet res = null;
+	    connect();
+	    try {
+		prpstm = connection.prepareStatement("SELECT * FROM patient WHERE department_id = ? ORDER BY lastname DESC, firstname DESC");
+		prpstm.setString(1,department_id);
+        res = prpstm.executeQuery();
+		while (res.next()){
+		    Patient p = new Patient(res.getInt("patient_id"), res.getString("firstname"), res.getString("lastname"), res.getString("social_security_number"), res.getBytes("picture"), res.getInt("picture_offset"));
+		    patients.add(p);		    
+		}
+	    }catch (SQLException sqle) {
+		Cleaner.writeMessage(sqle, "@getClinics()");
+	    }finally {
+		Cleaner.closePreparedStatement(prpstm);
+		Cleaner.closeResultSet(res);
+		disconnect();
+		return patients;
+	    }
+	}
+
     	
 
     	/**
