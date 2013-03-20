@@ -204,7 +204,7 @@ public class Database {
 		Cleaner.closePreparedStatement(prpstm);
 		Cleaner.closeResultSet(res);
 		disconnect();
-		return clinics;
+		return departments;
 	    }
 	}
 
