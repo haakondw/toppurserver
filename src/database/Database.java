@@ -44,145 +44,6 @@ public class Database {
 	
 	
 	/**
-	 * This method retrieves events based on the parameters passed to it beneath.
-	 * 
-	 * @param patients, this is a list over the patients you want to retrieve events for
-	 * @param eventIDs, this is a list over the events you currently have retrieved. 
-	 *		    This is passed to the method to prevent duplication.
-	 */
-	
-	public ArrayList<Event> getEvents(ArrayList<Patient> patients, ArrayList<Integer> eventIDs) {
-	    ArrayList<Event> events = new ArrayList<Event>();
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		String setning = "SELECT  * FROM event WHERE ";
-		int hitCounter = 0;
-		if (patients == null || patients.isEmpty()) return null;
-		for (Patient patient : patients) {
-		    if (hitCounter == 0) {
-			setning += "( pid = ?";
-		    }
-		    else {
-			setning += " OR pid = ?";
-		    }
-		    hitCounter++;
-		}
-		setning+=") ";
-		if (eventIDs != null) {
-		    setning += " AND (eid <> ? ";
-		    for (int i = 1; i<eventIDs.size(); i++) {
-			setning+=" AND eid <> ? ";
-		    }
-		    setning+= ")";
-		}
-		setning += " ORDER BY event_time DESC";
-		System.out.println(setning);
-		prpstm = connection.prepareStatement(setning);
-		int prepareCounter = 1;
-		
-		for (Patient patient : patients) { 
-		    prpstm.setString(prepareCounter, patient.getPid());
-		    prepareCounter++;
-		}
-		if (eventIDs != null) {
-		    for (Integer eventID : eventIDs) {
-			prpstm.setInt(prepareCounter, eventID);
-			prepareCounter++;
-		    }
-		    
-		}
-		
-		
-		
-		res = prpstm.executeQuery();
-		while(res.next()){
-		    int eid = res.getInt("eid");
-		    String pid = res.getString("pid");
-		    int flag = 0;
-		    int categoryRes = res.getInt("category");
-		    long eventTime = res.getLong("event_time");
-		    String title = res.getString("title");
-		    String description = res.getString("description");
-		    String pictureLink = res.getString("picture_link");
-		    Event e = new Event(eid,pid,flag,categoryRes,eventTime,title,description,pictureLink);
-		    events.add(e);
-		   
-		}		
-		
-		
-		
-	    } catch (Exception e) {
-		Cleaner.writeMessage(e, "@getEvents()");
-	    } finally {
-			Cleaner.closePreparedStatement(prpstm);
-			Cleaner.closeResultSet(res);
-			disconnect();
-			return events;
-	    }
-		
-		
-	   
-	}
-	
-	/**
-	 * This method returns all of the patients currently registered in the database. 
-	 */
-	public ArrayList<Patient> getPatientList() {
-	    ArrayList<Bedpost> bedposts = getAllBedposts();
-	    ArrayList<Patient> patients = new ArrayList<Patient>();
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM patient ORDER BY lastname DESC, firstname DESC");
-		res = prpstm.executeQuery();
-		while(res.next()) {
-		    System.out.println("res.next()");
-		   Bedpost bedpost = null;
-		   int bpid = 0;
-		   bpid = res.getInt("bpid");
-		   if (bpid != 0) {
-		       boolean found = false;
-		       int index = 0;
-		       while(!found && index < bedposts.size()) {
-			   if (bpid == bedposts.get(index).getBpid()) {
-			       bedpost = bedposts.get(index);
-			       found = true;
-			   }
-			   index++;
-		       }
-		   }		    
-		   Patient p = new Patient (res.getString("pid"), res.getString("firstname"),
-			    res.getString("lastname"), res.getString("address"), res.getString("postal_code"),
-			    null,res.getString("phonenumber"),
-			    res.getString("patient_journal"), bedpost);
-		   patients.add(p);
-		}
-		for (Patient p : patients) {
-		    if (p.getPostalCode() != null) {
-			prpstm = connection.prepareStatement("SELECT postal_address FROM postal_address WHERE postal_code = ?");
-			prpstm.setString(1,p.getPostalCode());
-			res = prpstm.executeQuery();
-			res.next();
-			p.setPostalAddress(res.getString("postal_address"));
-		    }
-		}
-		System.out.println("HEIA");
-		
-	    }catch (Exception sqle) {
-		Cleaner.writeMessage(sqle, "@getPatientList()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
-		return patients;
-	    }
-	}
-	
-	 
-	/**
 	 * This method returns all the departments currently registered in the database.
 	 */
 	
@@ -195,11 +56,11 @@ public class Database {
 		prpstm = connection.prepareStatement("SELECT * FROM department");
 		res = prpstm.executeQuery();
 		while (res.next()){
-		    Department d = new Department(res.getInt("departmentID"), res.getString("name"));
+		    Department d = new Department(res.getInt("department_id"), res.getString("name"));
 		    departments.add(d);		    
 		}
 	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getClinics()");
+		Cleaner.writeMessage(sqle, "@getDepartments()");
 	    }finally {
 		Cleaner.closePreparedStatement(prpstm);
 		Cleaner.closeResultSet(res);
@@ -208,7 +69,7 @@ public class Database {
 	    }
 	}
 
-    	/**
+	/**
 	 * This method returns the patient list for a given department.
 	 */
 	public ArrayList<Patient> getPatientList(int department_id) {
@@ -225,7 +86,7 @@ public class Database {
 		    patients.add(p);		    
 		}
 	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getClinics()");
+		Cleaner.writeMessage(sqle, "@getPatientList()");
 	    }finally {
 		Cleaner.closePreparedStatement(prpstm);
 		Cleaner.closeResultSet(res);
@@ -234,31 +95,112 @@ public class Database {
 	    }
 	}
 
-    	
-
-    	/**
-	 * This method returns all the clinics currently registered in the database.
-
-	
-	public ArrayList<Clinic> getClinics() {
+    /**
+	 * This method returns the deviations for a given patient.
+	 */
+	public ArrayList<Deviation> getDeviations(int patient_id) {
+	    ArrayList<Deviation> deviations = new ArrayList<Deviation>();
 	    PreparedStatement prpstm = null;
 	    ResultSet res = null;
-	    ArrayList<Clinic> clinics = new ArrayList<Clinic>();
 	    connect();
 	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM clinic");
-		res = prpstm.executeQuery();
+		prpstm = connection.prepareStatement("SELECT * FROM deviation WHERE patient_id = ? ORDER BY timestamp DESC");
+		prpstm.setString(1,patient_id);
+        res = prpstm.executeQuery();
 		while (res.next()){
-		    Clinic c = new Clinic(res.getInt("cid"), res.getString("clinic_name"));
-		    clinics.add(c);		    
+		    Deviation d = new Deviation(res.getInt("deviation_id"), res.getString("description"), res.getDate("timestamp"));
+		    deviations.add(d);		    
 		}
 	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getClinics()");
+		Cleaner.writeMessage(sqle, "@getDeviations()");
 	    }finally {
 		Cleaner.closePreparedStatement(prpstm);
 		Cleaner.closeResultSet(res);
 		disconnect();
-		return clinics;
+		return deviations;
 	    }
 	}
+
+    /**
+	 * This method returns the tasks for a given patient.
+	 */
+	public ArrayList<Task> getTasks(int patient_id) {
+	    ArrayList<Task> tasks = new ArrayList<Task>();
+	    PreparedStatement prpstm = null;
+	    ResultSet res = null;
+	    connect();
+	    try {
+		prpstm = connection.prepareStatement("SELECT * FROM task WHERE patient_id = ? ORDER BY timestamp DESC");
+		prpstm.setString(1,patient_id);
+        res = prpstm.executeQuery();
+		while (res.next()){
+		    boolean executed = res.getInt("executed")==1;
+		    Task t = new Task(res.getInt("task_id"), res.getDate("timestamp"), res.getString("dosage"), executed, res.getString("form"));
+		    tasks.add(t);		    
+		}
+	    }catch (SQLException sqle) {
+		Cleaner.writeMessage(sqle, "@getTasks()");
+	    }finally {
+		Cleaner.closePreparedStatement(prpstm);
+		Cleaner.closeResultSet(res);
+		disconnect();
+		return tasks;
+	    }
+	}
+
+    /**
+	 * This method returns the emergency contacts for a given patient.
+	 */
+	public ArrayList<EmergencyContact> getEmergencyContacts(int patient_id) {
+	    ArrayList<EmergencyContact> emergencyContacts = new ArrayList<EmergencyContact>();
+	    PreparedStatement prpstm = null;
+	    ResultSet res = null;
+	    connect();
+	    try {
+		prpstm = connection.prepareStatement("SELECT * FROM emergency_contacts WHERE patient_id = ? ORDER BY lastname DESC, firstname DESC");
+		prpstm.setString(1,patient_id);
+        res = prpstm.executeQuery();
+		while (res.next()){
+		    EmergencyContact ec = new EmergencyContact(res.getInt("emergency_contact_id"), res.getString("firstname"), res.getString("lastname"), res.getString("phone_number"));
+		    emergencyContacts.add(ec);		    
+		}
+	    }catch (SQLException sqle) {
+		Cleaner.writeMessage(sqle, "@getEmergencyContacts()");
+	    }finally {
+		Cleaner.closePreparedStatement(prpstm);
+		Cleaner.closeResultSet(res);
+		disconnect();
+		return emergencyContacts;
+	    }
+	}
+
+
+     /**
+	 * This method returns the medicine for a given task.
+	 */
+	public ArrayList<Medicine> getMedicines(int task_id) {
+	    ArrayList<Medicine> medicines = new ArrayList<Medicine>();
+	    PreparedStatement prpstm = null;
+	    ResultSet res = null;
+	    connect();
+	    try {
+		prpstm = connection.prepareStatement("SELECT * FROM medicine WHERE task_id = ?");
+		prpstm.setString(1,task_id);
+        res = prpstm.executeQuery();
+		while (res.next()){
+		    Medicine m = new Medicine(res.getInt("medicine_id"), res.getString("name"));
+		    medicines.add(m);		    
+		}
+	    }catch (SQLException sqle) {
+		Cleaner.writeMessage(sqle, "@getMedicines()");
+	    }finally {
+		Cleaner.closePreparedStatement(prpstm);
+		Cleaner.closeResultSet(res);
+		disconnect();
+		return medicines;
+	    }
+	}
+
 }
+
+
