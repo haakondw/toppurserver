@@ -1,26 +1,23 @@
-package hist.drtablet.database;
+package com.ntnu.eit.database;
 
-
-import hist.drtablet.data.*;
+import com.ntnu.eit.common.model.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
-
+import java.util.Date;
 
 public class Database {
-	
 
-    private Connection connection;
-    private String databaseName;
+	private Connection connection;
+	private String databaseName;
 
 	/* Initializes connection to the database */
 	public Database() {
 		try {
-			String databaseDriver ="org.apache.derby.jdbc.ClientDriver";
+			String databaseDriver = "org.apache.derby.jdbc.ClientDriver";
 			Class.forName(databaseDriver).newInstance();
 			databaseName = "jdbc:derby://localhost:1527/drtabletDB";
 		} catch (Exception sql) {
@@ -31,7 +28,8 @@ public class Database {
 	/* Connects to the database */
 	public void connect() {
 		try {
-			connection = DriverManager.getConnection(databaseName, "user","pass");
+			connection = DriverManager.getConnection(databaseName, "user",
+					"pass");
 		} catch (SQLException sqle) {
 			System.out.println("Connection Error: " + sqle);
 		}
@@ -41,193 +39,212 @@ public class Database {
 	public void disconnect() {
 		Cleaner.closeConnection(connection);
 	}
-	
-	
+
 	/**
-	 * This method returns all the departments currently registered in the database.
+	 * This method returns all the departments currently registered in the
+	 * database.
 	 */
-	
+
 	public ArrayList<Department> getDepartments() {
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    ArrayList<Department> departmetns = new ArrayList<Department>();
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM department");
-		res = prpstm.executeQuery();
-		while (res.next()){
-		    Department d = new Department(res.getInt("department_id"), res.getString("name"));
-		    departments.add(d);		    
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		ArrayList<Department> departments = new ArrayList<Department>();
+		connect();
+		try {
+			prpstm = connection.prepareStatement("SELECT * FROM department");
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				Department d = new Department(res.getInt("department_id"),
+						res.getString("name"));
+				departments.add(d);
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getDepartments()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
 		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getDepartments()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
 		return departments;
-	    }
 	}
 
 	/**
 	 * This method returns the patient list for a given department.
 	 */
-	public ArrayList<Patient> getPatientList(int department_id) {
-	    ArrayList<Patient> patients = new ArrayList<Patient>();
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM patient WHERE department_id = ? ORDER BY lastname DESC, firstname DESC");
-		prpstm.setString(1,department_id);
-        res = prpstm.executeQuery();
-		while (res.next()){
-		    Patient p = new Patient(res.getInt("patient_id"), res.getString("firstname"), res.getString("lastname"), res.getString("social_security_number"), res.getInt("picture_offset"));
-		    patients.add(p);		    
+	public ArrayList<Patient> getPatientList(int departmentId) {
+		ArrayList<Patient> patients = new ArrayList<Patient>();
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("SELECT * FROM patient WHERE department_id = ? ORDER BY lastname DESC, firstname DESC");
+			prpstm.setInt(1, departmentId);
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				Patient p = new Patient(res.getInt("patient_id"), departmentId,
+						res.getString("firstname"), res.getString("lastname"),
+						res.getString("social_security_number"), null,
+						res.getInt("picture_offset"));
+				patients.add(p);
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getPatientList()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
 		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getPatientList()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
 		return patients;
-	    }
 	}
 
 	/**
 	 * This method returns the picture for a given patient.
 	 */
-	public Byte[] getPicture(int patient_id) {
-	    Byte[] picture = new Byte[];
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT picture FROM patient WHERE patient_id = ?");
-		prpstm.setString(1,patient_id);
-        res = prpstm.executeQuery();
-		while (res.next()){
-		    Patient p = new Patient(res.getString("lastname"), res.getInt("picture_offset"));
-		    patients.add(p);		    
+	public Byte[] getPicture(int patientId) {
+		Byte[] picture = null;
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("SELECT picture FROM patient WHERE patient_id = ?");
+			prpstm.setInt(1, patientId);
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				Patient p = new Patient(res.getString("lastname"),
+						res.getInt("picture_offset"));
+				patients.add(p);
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getPicture()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
+
 		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getPicture()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
 		return picture;
-	    }
 	}
 
-
-    /**
+	/**
 	 * This method returns the deviations for a given patient.
 	 */
-	public ArrayList<Deviation> getDeviations(int patient_id) {
-	    ArrayList<Deviation> deviations = new ArrayList<Deviation>();
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM deviation WHERE patient_id = ? ORDER BY timestamp DESC");
-		prpstm.setString(1,patient_id);
-        res = prpstm.executeQuery();
-		while (res.next()){
-		    Deviation d = new Deviation(res.getInt("deviation_id"), res.getString("description"), res.getDate("timestamp"));
-		    deviations.add(d);		    
+	public ArrayList<Deviation> getDeviations(int patientId) {
+		ArrayList<Deviation> deviations = new ArrayList<Deviation>();
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("SELECT * FROM deviation WHERE patient_id = ? ORDER BY timestamp DESC");
+			prpstm.setInt(1, patientId);
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				Deviation d = new Deviation(res.getInt("deviation_id"),
+						res.getString("description"), res.getDate("timestamp"));
+				deviations.add(d);
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getDeviations()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
+
 		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getDeviations()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
 		return deviations;
-	    }
 	}
 
-    /**
+	/**
 	 * This method returns the tasks for a given patient.
 	 */
-	public ArrayList<Task> getTasks(int patient_id) {
-	    ArrayList<Task> tasks = new ArrayList<Task>();
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM task WHERE patient_id = ? ORDER BY timestamp DESC");
-		prpstm.setString(1,patient_id);
-        res = prpstm.executeQuery();
-		while (res.next()){
-		    boolean executed = res.getInt("executed")==1;
-		    Task t = new Task(res.getInt("task_id"), res.getDate("timestamp"), res.getString("dosage"), executed, res.getString("form"));
-		    tasks.add(t);		    
+	public ArrayList<Task> getTasks(int patientId) {
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("SELECT * FROM task WHERE patient_id = ? ORDER BY timestamp DESC");
+			prpstm.setInt(1, patientId);
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				boolean executed = res.getInt("executed") == 1;
+				Date date = (Date) res.getDate("timestamp");
+				Task t = new Task(res.getInt("task_id"),
+						res.getInt("medicine_id"),
+						res.getString("medicine_form"), date,
+						res.getString("dosage"), executed);
+				tasks.add(t);
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getTasks()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
+
 		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getTasks()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
 		return tasks;
-	    }
 	}
 
-    /**
+	/**
 	 * This method returns the emergency contacts for a given patient.
 	 */
-	public ArrayList<EmergencyContact> getEmergencyContacts(int patient_id) {
-	    ArrayList<EmergencyContact> emergencyContacts = new ArrayList<EmergencyContact>();
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM emergency_contacts WHERE patient_id = ? ORDER BY lastname DESC, firstname DESC");
-		prpstm.setString(1,patient_id);
-        res = prpstm.executeQuery();
-		while (res.next()){
-		    EmergencyContact ec = new EmergencyContact(res.getInt("emergency_contact_id"), res.getString("firstname"), res.getString("lastname"), res.getString("phone_number"));
-		    emergencyContacts.add(ec);		    
+	public ArrayList<EmergencyContact> getEmergencyContacts(int patientId) {
+		ArrayList<EmergencyContact> emergencyContacts = new ArrayList<EmergencyContact>();
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("SELECT * FROM emergency_contacts WHERE patient_id = ? ORDER BY lastname DESC, firstname DESC");
+			prpstm.setInt(1, patientId);
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				EmergencyContact ec = new EmergencyContact(
+						res.getInt("emergency_contact_id"),
+						res.getString("firstname"), res.getString("lastname"),
+						res.getString("phone_number"));
+				emergencyContacts.add(ec);
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getEmergencyContacts()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
+			return emergencyContacts;
 		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getEmergencyContacts()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
-		return emergencyContacts;
-	    }
 	}
 
-
-     /**
+	/**
 	 * This method returns the medicine for a given task.
 	 */
-	public ArrayList<Medicine> getMedicines(int task_id) {
-	    ArrayList<Medicine> medicines = new ArrayList<Medicine>();
-	    PreparedStatement prpstm = null;
-	    ResultSet res = null;
-	    connect();
-	    try {
-		prpstm = connection.prepareStatement("SELECT * FROM medicine WHERE task_id = ?");
-		prpstm.setString(1,task_id);
-        res = prpstm.executeQuery();
-		while (res.next()){
-		    Medicine m = new Medicine(res.getInt("medicine_id"), res.getString("name"));
-		    medicines.add(m);		    
+	public ArrayList<Medicine> getMedicines(int taskId) {
+		ArrayList<Medicine> medicines = new ArrayList<Medicine>();
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("SELECT * FROM medicine WHERE task_id = ?");
+			prpstm.setInt(1, taskId);
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				Medicine m = new Medicine(res.getInt("medicine_id"),
+						res.getString("name"));
+				medicines.add(m);
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getMedicines()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
+			return medicines;
 		}
-	    }catch (SQLException sqle) {
-		Cleaner.writeMessage(sqle, "@getMedicines()");
-	    }finally {
-		Cleaner.closePreparedStatement(prpstm);
-		Cleaner.closeResultSet(res);
-		disconnect();
-		return medicines;
-	    }
 	}
 
 }
-
-
