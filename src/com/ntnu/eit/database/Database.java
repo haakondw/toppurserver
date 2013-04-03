@@ -111,10 +111,8 @@ public class Database {
 					.prepareStatement("SELECT picture FROM patient WHERE patient_id = ?");
 			prpstm.setInt(1, patientId);
 			res = prpstm.executeQuery();
-			while (res.next()) {
-				Patient p = new Patient(res.getString("lastname"),
-						res.getInt("picture_offset"));
-				patients.add(p);
+			if (res.next()) {
+				picture = res.getBytes("picture");
 			}
 		} catch (SQLException sqle) {
 			Cleaner.writeMessage(sqle, "@getPicture()");
