@@ -82,7 +82,7 @@ public class Database {
 		prpstm.setString(1,department_id);
         res = prpstm.executeQuery();
 		while (res.next()){
-		    Patient p = new Patient(res.getInt("patient_id"), res.getString("firstname"), res.getString("lastname"), res.getString("social_security_number"), res.getBytes("picture"), res.getInt("picture_offset"));
+		    Patient p = new Patient(res.getInt("patient_id"), res.getString("firstname"), res.getString("lastname"), res.getString("social_security_number"), res.getInt("picture_offset"));
 		    patients.add(p);		    
 		}
 	    }catch (SQLException sqle) {
@@ -94,6 +94,33 @@ public class Database {
 		return patients;
 	    }
 	}
+
+	/**
+	 * This method returns the picture for a given patient.
+	 */
+	public Byte[] getPicture(int patient_id) {
+	    Byte[] picture = new Byte[];
+	    PreparedStatement prpstm = null;
+	    ResultSet res = null;
+	    connect();
+	    try {
+		prpstm = connection.prepareStatement("SELECT picture FROM patient WHERE patient_id = ?");
+		prpstm.setString(1,patient_id);
+        res = prpstm.executeQuery();
+		while (res.next()){
+		    Patient p = new Patient(res.getString("lastname"), res.getInt("picture_offset"));
+		    patients.add(p);		    
+		}
+	    }catch (SQLException sqle) {
+		Cleaner.writeMessage(sqle, "@getPicture()");
+	    }finally {
+		Cleaner.closePreparedStatement(prpstm);
+		Cleaner.closeResultSet(res);
+		disconnect();
+		return picture;
+	    }
+	}
+
 
     /**
 	 * This method returns the deviations for a given patient.
