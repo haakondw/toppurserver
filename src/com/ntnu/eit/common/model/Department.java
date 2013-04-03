@@ -1,4 +1,4 @@
-package dao;
+package com.ntnu.eit.common.model;
 
 import java.io.Serializable;
 
@@ -10,7 +10,7 @@ public class Department implements Serializable{
 	private static final long serialVersionUID = -470289347664691483L;
 	private int departmentID;
 	private String name;
-	
+
 	public Department(){}
 
 	public Department(int departmentID, String name){
@@ -36,6 +36,6 @@ public class Department implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Pasient [departmentID=" + departmentID + ", name=" + name + "]";
+		return "Patient [departmentID=" + departmentID + ", name=" + name + "]";
 	}
 }

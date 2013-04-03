@@ -1,4 +1,4 @@
-package dao;
+package com.ntnu.eit.common.model;
 
 import java.io.Serializable;
 

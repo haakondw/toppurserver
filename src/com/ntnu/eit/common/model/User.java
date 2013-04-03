@@ -1,4 +1,4 @@
-package dao;
+package com.ntnu.eit.common.model;
 
 import java.io.Serializable;
 
@@ -15,7 +15,7 @@ public class User implements Serializable {
 	private String lastname;
 
 	public User(){}
-	
+
 	public User(int userID, String username, String password, String firstname, String lastname){
 		this.userID = userID;
 		this.username = username;
@@ -27,35 +27,35 @@ public class User implements Serializable {
 	public int getUserID() {
 		return userID;
 	}
-	
+
 	public void setUserID(int userID) {
 		this.userID = userID;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
-	
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public String getFirstname() {
 		return firstname;
 	}
-	
+
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
 	}
-	
+
 	public String getLastname() {
 		return lastname;
 	}
@@ -70,5 +70,5 @@ public class User implements Serializable {
 				+ password + ", firstname=" + firstname + ", lastname="
 				+ lastname + "]";
 	}
-	
+
 }
