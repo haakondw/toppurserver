@@ -8,9 +8,9 @@ public class TaskSocketObject implements Serializable{
   
     private static final long serialVersionUID = -1460051194874732469L;
     private int patientId;
-    List<Integer> executedTasks;
+    ArrayList<Integer> executedTasks;
 
-    public TaskSocketObject(int patientId, List executedTasks) {
+    public TaskSocketObject(int patientId, ArrayList<Integer> executedTasks) {
     this.patientId = patientId;
     this.executedTasks = new ArrayList<Integer>(executedTasks);
     }
@@ -23,10 +23,10 @@ public class TaskSocketObject implements Serializable{
         return patientId;
     }
 
-    public void setExecutedTasks(List executedTasks){
+    public void setExecutedTasks(ArrayList<Integer> executedTasks){
         this.executedTasks = new ArrayList<Integer>(executedTasks);
     }
-    public List<Integer> getExecutedTasks(){
+    public ArrayList<Integer> getExecutedTasks(){
         return executedTasks;
     }
     

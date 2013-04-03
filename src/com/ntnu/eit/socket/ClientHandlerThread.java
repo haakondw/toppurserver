@@ -1,11 +1,14 @@
 package com.ntnu.eit.socket;
 
-import hist.drtablet.data.*;
-import hist.drtablet.database.Database;
+import com.ntnu.eit.database.Database;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 
@@ -28,6 +31,13 @@ class ClientHandlerThread extends Thread{
     @Override
     public void run() {
 	ArrayList<Object> objects = null;
+	
+	/* Get timestamp for log */
+   	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+	Date d = new Date();
+	String date = dateFormat.format(d);
+	
+	/* Try to fetch socket object and respond */
 	try {
 	    db = new Database();
 	    objects = new ArrayList<Object>();
@@ -35,17 +45,14 @@ class ClientHandlerThread extends Thread{
 	    in = new ObjectInputStream(s.getInputStream());
 	    Object o = in.readObject();
 
-	    /* Get timestamp for log */
-	   	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-		Date date = new Date();
-		String date = dateFormat.format(date);
+	    
 
 	    /* TaskSocketObject */
 	    if (o instanceof TaskSocketObject) {
 		System.out.println(date + " - TaskSocketObject recieved");
 		TaskSocketObject tso = (TaskSocketObject)o;
 		int patientId = tso.getPatientId();
-		if(tso.getExecutedTasks != null && !tso.getExecutedTasks.isEmpty()){
+		if(tso.getExecutedTasks() != null && !tso.getExecutedTasks().isEmpty()){
 			//TODO update database
 		}
 		objects.addAll(db.getTasks(patientId));
@@ -62,14 +69,14 @@ class ClientHandlerThread extends Thread{
 		System.out.println(date + " - PictureSocketObject recieved");
 		PictureSocketObject pso = (PictureSocketObject)o;
 		int patientId = pso.getPatientId();
-		objects.addAll(db.getPicture(patientId));	
+		objects.add(db.getPicture(patientId));	
 	    }
 	    System.out.println("objectSize: "+objects.size());
 	    out.writeObject(objects);
 	    out.flush();
 		
 	}catch(Exception e) {
-	    System.out.println("Socketcommunication with the server failed: "+e);
+	    System.out.println(date + " - ERROR: Socketcommunication with the server failed: "+e);
 	}
 	finally {
 	    try {
@@ -78,7 +85,7 @@ class ClientHandlerThread extends Thread{
 		s.close();
 	    }
 	    catch (Exception e1) {
-		System.out.println("Closing of streaks and/or socket failed: "+e1);
+		System.out.println(date + " - ERROR: Closing of streaks and/or socket failed: "+e1);
 	    }
 	}
     }

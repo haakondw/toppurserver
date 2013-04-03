@@ -1,4 +1,4 @@
-package hist.drtablet.database;
+package com.ntnu.eit.database;
 
 /* Class offering methods for safely closing connections to database */
 import java.sql.*;

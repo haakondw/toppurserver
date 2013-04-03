@@ -101,8 +101,8 @@ public class Database {
 	/**
 	 * This method returns the picture for a given patient.
 	 */
-	public Byte[] getPicture(int patientId) {
-		Byte[] picture = null;
+	public byte[] getPicture(int patientId) {
+		byte[] picture = null;
 		PreparedStatement prpstm = null;
 		ResultSet res = null;
 		connect();
@@ -213,8 +213,8 @@ public class Database {
 			Cleaner.closePreparedStatement(prpstm);
 			Cleaner.closeResultSet(res);
 			disconnect();
-			return emergencyContacts;
 		}
+		return emergencyContacts;
 	}
 
 	/**
@@ -241,8 +241,8 @@ public class Database {
 			Cleaner.closePreparedStatement(prpstm);
 			Cleaner.closeResultSet(res);
 			disconnect();
-			return medicines;
 		}
+		return medicines;
 	}
 
 }
