@@ -187,7 +187,7 @@ public class Database {
 		connect();
 		try {
 			prpstm = connection
-					.prepareStatement("UPDATE deviation SET description = ?, timestamp = ? WHERE deviationID = ?");
+					.prepareStatement("UPDATE deviation SET description = ?, timestamp = ? WHERE deviationId = ?");
 			prpstm.setString(1, description);
 			prpstm.setDate(2, timestamp);
 			prpstm.setInt(3, deviationId);
@@ -233,6 +233,34 @@ public class Database {
 		}
 		return tasks;
 	}
+
+	/**
+	 * This method updates a given task.
+	 */
+	public boolean changeTask(int taskId, boolean executed, Date timestamp) {
+		boolean ok = true;
+        PreparedStatement prpstm = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("UPDATE task SET execuded = ?, timestamp = ? WHERE taskId = ?");
+			if execuded{
+                prpstm.setString(1, 1);
+            }else{
+                prpstm.setString(1, 0);
+            }
+			prpstm.setDate(2, timestamp);
+			prpstm.setInt(3, taskId);
+			prpstm.executeUpdate();
+		} catch (Exception sqle) {
+			Cleaner.writeMessage(sqle, "@changeTask()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			disconnect();
+		}
+        return ok;
+	}
+
 
 	/**
 	 * This method returns the emergency contacts for a given patient.
