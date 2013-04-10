@@ -11,7 +11,7 @@ public class ToppurServer extends Thread{
   
   
   /**
-   * This method starts a new ClientHandlerThread, every time a new socketcommunication is initialized.
+   * This method starts a new ClientHandlerThread, every time a new socket communication is initialized.
    */
    @Override
   public void run() {

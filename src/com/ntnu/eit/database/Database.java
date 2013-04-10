@@ -244,28 +244,29 @@ public class Database {
 		}
 		return medicines;
 	}
-	
+
 	/**
 	 * 
 	 * @param departmentName
 	 * @return
 	 */
 	public boolean registerNewDepartment(String departmentName) {
-        boolean ok = true;
-        PreparedStatement prpstm = null;
-        connect();
-        try {
-            prpstm = connection.prepareStatement("INSERT INTO department(department_name) VALUES(?)");
-            prpstm.setString(1, departmentName);
-            prpstm.executeUpdate();
-        } catch (Exception sqle) {
-            Cleaner.writeMessage(sqle, "@registerNewDepartment");
-            ok = false;
-        } finally {
-            Cleaner.closePreparedStatement(prpstm);
-            disconnect();
-        }
-        return ok;
-    }
+		boolean ok = true;
+		PreparedStatement prpstm = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("INSERT INTO department(department_name) VALUES(?)");
+			prpstm.setString(1, departmentName);
+			prpstm.executeUpdate();
+		} catch (Exception sqle) {
+			Cleaner.writeMessage(sqle, "@registerNewDepartment");
+			ok = false;
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			disconnect();
+		}
+		return ok;
+	}
 
 }
