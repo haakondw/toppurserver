@@ -155,6 +155,53 @@ public class Database {
 	}
 
 	/**
+	 * This method creates a new deviation for a given patient.
+	 */
+	public boolean registerDeviation(int deviationId, String description, Date timestamp, int patientId) {
+		boolean ok = true;
+        PreparedStatement prpstm = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("INSERT INTO deviation(deviation_ID, description, timestamp, patient_ID) VALUES(?,?,?,?)");
+			prpstm.setInt(1, deviationId);
+			prpstm.setString(2, description);
+			prpstm.setDate(3, timestamp);
+			prpstm.setInt(4, patientId);
+			prpstm.executeUpdate();
+		} catch (Exception sqle) {
+			Cleaner.writeMessage(sqle, "@registerDeviation()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			disconnect();
+		}
+        return ok;
+	}
+
+	/**
+	 * This method updates a given deviation.
+	 */
+	public boolean changeDeviation(int deviationId, String description, Date timestamp) {
+		boolean ok = true;
+        PreparedStatement prpstm = null;
+		connect();
+		try {
+			prpstm = connection
+					.prepareStatement("UPDATE deviation SET description = ?, timestamp = ? WHERE deviationID = ?");
+			prpstm.setString(1, description);
+			prpstm.setDate(2, timestamp);
+			prpstm.setInt(3, deviationId);
+			prpstm.executeUpdate();
+		} catch (Exception sqle) {
+			Cleaner.writeMessage(sqle, "@changeDeviation()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			disconnect();
+		}
+        return ok;
+	}
+
+	/**
 	 * This method returns the tasks for a given patient.
 	 */
 	public ArrayList<Task> getTasks(int patientId) {
@@ -243,30 +290,6 @@ public class Database {
 			disconnect();
 		}
 		return medicines;
-	}
-
-	/**
-	 * 
-	 * @param departmentName
-	 * @return
-	 */
-	public boolean registerNewDepartment(String departmentName) {
-		boolean ok = true;
-		PreparedStatement prpstm = null;
-		connect();
-		try {
-			prpstm = connection
-					.prepareStatement("INSERT INTO department(department_name) VALUES(?)");
-			prpstm.setString(1, departmentName);
-			prpstm.executeUpdate();
-		} catch (Exception sqle) {
-			Cleaner.writeMessage(sqle, "@registerNewDepartment");
-			ok = false;
-		} finally {
-			Cleaner.closePreparedStatement(prpstm);
-			disconnect();
-		}
-		return ok;
 	}
 
 }
