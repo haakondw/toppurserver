@@ -47,6 +47,7 @@ public class ToppurServer extends Thread{
     public static void main(String[] args) {
 	ToppurServer dts = new ToppurServer();
 	dts.start();
+	System.out.println("Server started and ready for action!");
 	
     }
 }
