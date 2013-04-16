@@ -5,9 +5,11 @@ import com.ntnu.eit.database.Database;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 class ClientHandlerThread extends Thread {
@@ -66,7 +68,16 @@ class ClientHandlerThread extends Thread {
 				System.out.println(date + " - PictureSocketObject recieved");
 				PictureSocketObject pso = (PictureSocketObject) o;
 				int patientId = pso.getPatientId();
-				objects.add(db.getPicture(patientId));
+				byte[] pic = db.getPicture(patientId);
+				
+				/* Check old md5 checksum against current picture */
+				MessageDigest md = MessageDigest.getInstance("MD5");
+				byte[] checksum = md.digest(pic);
+				if(pso.getLastChecksum() != null && pso.getLastChecksum().length > 0){
+					if(!Arrays.equals(checksum, pso.getLastChecksum())){
+						objects.add(pic);
+					}
+				}
 
 			} else if (o instanceof DepartmentSocketObject) {
 				objects.addAll(db.getDepartments());
