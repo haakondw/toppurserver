@@ -242,12 +242,11 @@ public class Database {
         PreparedStatement prpstm = null;
 		connect();
 		try {
-			prpstm = connection
-					.prepareStatement("UPDATE task SET execuded = ?, timestamp = ? WHERE taskId = ?");
-			if execuded{
-                prpstm.setString(1, 1);
+			prpstm = connection.prepareStatement("UPDATE task SET execuded = ?, timestamp = ? WHERE taskId = ?");
+			if (executed){
+                prpstm.setInt(1, 1);
             }else{
-                prpstm.setString(1, 0);
+                prpstm.setInt(1, 0);
             }
 			prpstm.setDate(2, timestamp);
 			prpstm.setInt(3, taskId);
