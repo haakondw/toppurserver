@@ -20,13 +20,6 @@ public class Patient implements Serializable{
 
 	}
 
-	public Patient(int patientID, int departmentID, String socialSecurityNumber, String firstname, String lastname) {
-		this.patientID = patientID;
-		this.departmentID = departmentID;
-		this.socialSecurityNumber = socialSecurityNumber;
-		this.firstname = firstname;
-		this.lastname = lastname;
-	}
 
 	public Patient(int patientID, int departmentID, String socialSecurityNumber, String firstname, String lastname, byte[] picture, int pictureOffset) {
 		this.patientID = patientID;

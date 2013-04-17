@@ -110,8 +110,8 @@ public class Database {
 			res = prpstm.executeQuery();
 			while (res.next()) {
 				Patient p = new Patient(res.getInt("patient_id"), departmentId,
-						res.getString("firstname"), res.getString("lastname"),
-						res.getString("social_security_number"), null,
+						res.getString("social_security_number"),
+						res.getString("firstname"), res.getString("lastname"), null,
 						res.getInt("picture_offset"));
 				patients.add(p);
 			}
