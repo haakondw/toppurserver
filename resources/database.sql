@@ -16,6 +16,7 @@ CREATE TABLE patient (patient_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS ID
 						lastname VARCHAR(50)NOT NULL,
 						social_security_number VARCHAR(11) NOT NULL,
 						picture blob(16M),
+						picture_offset INT,
 						department_id INT);
 
 CREATE TABLE emergency_contact (emergency_contact_id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1),

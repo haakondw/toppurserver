@@ -16,6 +16,8 @@ INSERT INTO patient(firstname, lastname, social_security_number, department_id)
 VALUES('Bjørg', 'Olsen', '10053624748', 3);
 
 
+
+
 INSERT INTO medicine(name) VALUES ('Ibux');
 INSERT INTO medicine(name) VALUES ('Livostin');
 
