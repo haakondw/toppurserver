@@ -2,6 +2,7 @@ package com.ntnu.eit.database;
 
 import com.ntnu.eit.common.model.*;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +21,7 @@ public class Database {
 		try {
 			String databaseDriver = "org.apache.derby.jdbc.ClientDriver";
 			Class.forName(databaseDriver).newInstance();
-			databaseName = "jdbc:derby://localhost:1527/drtabletDB";
+			databaseName = "jdbc:derby://localhost:1527/toppurbase";
 		} catch (Exception sql) {
 			System.out.println("DataSourceError: " + sql);
 		}
@@ -73,20 +74,23 @@ public class Database {
 		ResultSet res = null;
 		ArrayList<Department> departments = new ArrayList<Department>();
 		connect();
-		try {
-			prpstm = connection.prepareStatement("SELECT * FROM department");
-			res = prpstm.executeQuery();
-			while (res.next()) {
-				Department d = new Department(res.getInt("department_id"),
-						res.getString("name"));
-				departments.add(d);
+		if(connection == null) System.out.println("FEIL!");
+		else{
+			try {
+				prpstm = connection.prepareStatement("SELECT * FROM department");
+				res = prpstm.executeQuery();
+				while (res.next()) {
+					Department d = new Department(res.getInt("department_id"),
+							res.getString("department_name"));
+					departments.add(d);
+				}
+			} catch (SQLException sqle) {
+				Cleaner.writeMessage(sqle, "@getDepartments()");
+			} finally {
+				Cleaner.closePreparedStatement(prpstm);
+				Cleaner.closeResultSet(res);
+				disconnect();
 			}
-		} catch (SQLException sqle) {
-			Cleaner.writeMessage(sqle, "@getDepartments()");
-		} finally {
-			Cleaner.closePreparedStatement(prpstm);
-			Cleaner.closeResultSet(res);
-			disconnect();
 		}
 		return departments;
 	}
