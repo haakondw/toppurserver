@@ -40,6 +40,28 @@ public class Database {
 	public void disconnect() {
 		Cleaner.closeConnection(connection);
 	}
+	
+	public User getUser(String username, String password){
+		PreparedStatement prpstm = null;
+		ResultSet res = null;
+		User user = null;
+		ArrayList<Department> departments = new ArrayList<Department>();
+		connect();
+		try {
+			prpstm = connection.prepareStatement("SELECT * FROM app_user WHERE username = ? AND password = ?");
+			res = prpstm.executeQuery();
+			while (res.next()) {
+				user = new User(res.getInt("user_id"), res.getString("username"), res.getString("password"), res.getString("firstname"), res.getString("lastname"));
+			}
+		} catch (SQLException sqle) {
+			Cleaner.writeMessage(sqle, "@getUser()");
+		} finally {
+			Cleaner.closePreparedStatement(prpstm);
+			Cleaner.closeResultSet(res);
+			disconnect();
+		}
+		return user;
+	}
 
 	/**
 	 * This method returns all the departments currently registered in the

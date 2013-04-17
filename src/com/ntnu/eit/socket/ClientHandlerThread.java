@@ -81,6 +81,11 @@ class ClientHandlerThread extends Thread {
 
 			} else if (o instanceof DepartmentSocketObject) {
 				objects.addAll(db.getDepartments());
+				
+			/* LoginSocketObject */
+			} else if (o instanceof LoginSocketObject){
+				LoginSocketObject lso = (LoginSocketObject) o;
+				objects.add(db.getUser(lso.getUsername(), lso.getPassword()));
 			}
 
 			System.out.println("objectSize: " + objects.size());
