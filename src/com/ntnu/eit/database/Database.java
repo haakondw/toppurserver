@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -166,7 +167,7 @@ public class Database {
 					.prepareStatement("INSERT INTO deviation(deviation_ID, description, timestamp, patient_ID) VALUES(?,?,?,?)");
 			prpstm.setInt(1, deviationId);
 			prpstm.setString(2, description);
-			prpstm.setDate(3, timestamp);
+			prpstm.setTimestamp(3, new Timestamp(timestamp.getTime()));
 			prpstm.setInt(4, patientId);
 			prpstm.executeUpdate();
 		} catch (Exception sqle) {
@@ -189,7 +190,7 @@ public class Database {
 			prpstm = connection
 					.prepareStatement("UPDATE deviation SET description = ?, timestamp = ? WHERE deviationId = ?");
 			prpstm.setString(1, description);
-			prpstm.setDate(2, timestamp);
+			prpstm.setTimestamp(2, new Timestamp(timestamp.getTime()));
 			prpstm.setInt(3, deviationId);
 			prpstm.executeUpdate();
 		} catch (Exception sqle) {
@@ -242,14 +243,13 @@ public class Database {
         PreparedStatement prpstm = null;
 		connect();
 		try {
-			prpstm = connection.prepareStatement("UPDATE task SET execuded = ?, timestamp = ? WHERE taskId = ?");
+			prpstm = connection.prepareStatement("UPDATE task SET execuded = ? WHERE taskId = ?");
 			if (executed){
                 prpstm.setInt(1, 1);
             }else{
                 prpstm.setInt(1, 0);
             }
-			prpstm.setDate(2, timestamp);
-			prpstm.setInt(3, taskId);
+			prpstm.setInt(2, taskId);
 			prpstm.executeUpdate();
 		} catch (Exception sqle) {
 			Cleaner.writeMessage(sqle, "@changeTask()");

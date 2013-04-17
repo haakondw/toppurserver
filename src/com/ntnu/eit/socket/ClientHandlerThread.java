@@ -60,8 +60,8 @@ class ClientHandlerThread extends Thread {
 			} else if (o instanceof PatientSocketObject) {
 				System.out.println(date + " - PatientSocketObject recieved");
 				PatientSocketObject pso = (PatientSocketObject) o;
-				int departmentId = pso.getDepartmentId();
-				objects.addAll(db.getPatientList(departmentId));
+				for(Integer i : pso.getDepartmentIds())
+				objects.addAll(db.getPatientList(i));
 
 				/* PictureSocketObject */
 			} else if (o instanceof PictureSocketObject) {
@@ -89,8 +89,8 @@ class ClientHandlerThread extends Thread {
 
 		} catch (Exception e) {
 			System.out.println(date
-					+ " - ERROR: Socketcommunication with the server failed: "
-					+ e);
+					+ " - ERROR: Socketcommunication with the server failed: ");
+			e.printStackTrace();
 		} finally {
 			try {
 				out.close();
@@ -98,10 +98,9 @@ class ClientHandlerThread extends Thread {
 				s.close();
 			} catch (Exception e1) {
 				System.out.println(date
-						+ " - ERROR: Closing of streaks and/or socket failed: "
-						+ e1);
+						+ " - ERROR: Closing of streaks and/or socket failed: ");
+				e1.printStackTrace();
 			}
 		}
 	}
-
 }
