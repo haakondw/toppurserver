@@ -52,7 +52,10 @@ class ClientHandlerThread extends Thread {
 				int patientId = tso.getPatientId();
 				if (tso.getExecutedTasks() != null
 						&& !tso.getExecutedTasks().isEmpty()) {
-					// TODO update database
+					for(Integer t : tso.getExecutedTasks()){
+						db.changeTask(t, true);
+					}
+					
 				}
 				objects.addAll(db.getTasks(patientId));
 

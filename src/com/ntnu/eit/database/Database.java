@@ -11,6 +11,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.sql.rowset.serial.SerialBlob;
+
+import org.apache.derby.client.am.Blob;
+
 public class Database {
 
 	private Connection connection;
@@ -151,6 +155,26 @@ public class Database {
 		}
 		return picture;
 	}
+	
+//	public boolean setPicture(int patientId, byte[] image){
+//		boolean ok = true;
+//        PreparedStatement prpstm = null;
+//		connect();
+//		try {
+//			prpstm = connection
+//					.prepareStatement("UPDATE patient SET description = ?, timestamp = ? WHERE deviationId = ?");
+//			Blob b = new Blob();
+//			prpstm.setBlob(1, );
+//			prpstm.setInt(2, patientId);
+//			prpstm.executeUpdate();
+//		} catch (Exception sqle) {
+//			Cleaner.writeMessage(sqle, "@changeDeviation()");
+//		} finally {
+//			Cleaner.closePreparedStatement(prpstm);
+//			disconnect();
+//		}
+//        return ok;
+//	}
 
 	/**
 	 * This method returns the deviations for a given patient.
@@ -264,7 +288,7 @@ public class Database {
 	/**
 	 * This method updates a given task.
 	 */
-	public boolean changeTask(int taskId, boolean executed, Date timestamp) {
+	public boolean changeTask(int taskId, boolean executed) {
 		boolean ok = true;
         PreparedStatement prpstm = null;
 		connect();
