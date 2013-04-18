@@ -293,7 +293,7 @@ public class Database {
         PreparedStatement prpstm = null;
 		connect();
 		try {
-			prpstm = connection.prepareStatement("UPDATE task SET execuded = ? WHERE taskId = ?");
+			prpstm = connection.prepareStatement("UPDATE task SET executed = ? WHERE task_id = ?");
 			if (executed){
                 prpstm.setInt(1, 1);
             }else{
